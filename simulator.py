@@ -2,6 +2,9 @@ import numpy as np
 import random as R
 import sys
 
+from surface import Surface
+# import visualizer as vis
+
 # try:
 # 	from bike import Bike
 #	from chromosome import Chromosome
@@ -11,15 +14,35 @@ import sys
 # 	print "Not enough modules for simulation"
 # 	sys.exit(1)
 
-class SurfaceElement(object):
-	def __init__(self, p,  tg):
-		pass
+class Simulator(object):
+	def __init__(self, bike, surface):
+		self._bike = bike
+		self._surface = surface
 
-class Surface(object):
-	def __init__(self, dist, h):
-		elements = []
+	def getSurface(self):
+		return self._surface
 
-	def 
+	def getTime(self):
+		return self._t
+
+	def getBikePos(self):
+		return self._bikepos
+
+	def run(self, bike, surface, dt = 0.01):
+		self._bike = bike
+		self._surface = surface
+		self._t = 0.0
+		self._bikepos = Point(2, 2)
+
+		doRun = True
+		while doRun:
+			self._bikepos = self._bike.update(self._surface, self._bikepos, dt)
+			self._t += dt
+			vis.draw(self)
+			rundist = self._bikepos.x - 2
+			
+
+
 
 if __name__ == "__main__":
 	nbikes = 20
@@ -29,27 +52,27 @@ if __name__ == "__main__":
 
 	surf = Surface(distance, height)
 
-	bikes = []
-	for i in xrange(nbikes):
-		...
-		c = Chromosome(...)
-		b = Bike(c)
-		bikes.append(b)
+	# bikes = []
+	# for i in xrange(nbikes):
+	# 	...
+	# 	c = Chromosome(...)
+	# 	b = Bike(c)
+	# 	bikes.append(b)
 
 	generation = 1 		# show generation in the corner
-	doRun = True		# a button to stop the simulation?
-	while doRun:
-		for b in bikes:
-			fit = Simulator.run(b, surf)
-			b.setFitness(fit)
+	doRunAll = True		# a button to stop the simulation?
+	while doRunAll:
+		# for b in bikes:
+		# 	fit = Simulator.run(b, surf)
+		# 	b.setFitness(fit)
 
-		nextgen = GeneticAlgorithm(bikes)
+		# nextgen = GeneticAlgorithm(bikes)
 
 		generation += 1
 
 		if generation > 100:
 			break
 
-		bikes = nextgen
+		# bikes = nextgen
 
 
