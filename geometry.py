@@ -27,6 +27,31 @@ class Point(object):
 		self._x = x
 		self._y = y
 
+	def __le__(self, other):
+		if self.x <= other.x:
+			return True
+		return False
+
+	def __ge__(self, other):
+		if self.x >= other.x:
+			return True
+		return False
+
+	def __lt__(self, other):
+		if self.x < other.x:
+			return True
+		return False
+
+	def __gt__(self, other):
+		if self.x > other.x:
+			return True
+		return False
+
+	def __eq__(self, other):
+		if self.x == other.x and self.y == other.y:
+			return True
+		return False
+
 def dist(p1, p2):
 	xdiff = p2.x - p1.x
 	ydiff = p2.y - p1.y
