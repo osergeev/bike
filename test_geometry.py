@@ -29,3 +29,4 @@ def test_comparison():
 	l = [p2, p1]
 	l.sort()
 	assert l == [Point(1, 2), Point(4, 3)]
+	

@@ -52,6 +52,14 @@ class Point(object):
 			return True
 		return False
 
+	def __repr__(self):
+		self._string = "({x}, {y})"
+		return self._string.format(x = self._x, y = self._y)
+
+	def __str__(self):
+		self._string = "({x}, {y})"
+		return self._string.format(x = self._x, y = self._y)
+
 def dist(p1, p2):
 	xdiff = p2.x - p1.x
 	ydiff = p2.y - p1.y
