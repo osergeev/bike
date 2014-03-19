@@ -55,6 +55,9 @@ class Point(object):
 		else:
 			return Point(self.x * other, self.y * other)
 
+	def __div__(self, other):
+		return Point(self.x / other, self.y / other)
+
 	def __le__(self, other):
 		if self.x <= other.x:
 			return True
