@@ -33,15 +33,30 @@ class Simulator(object):
 		self._surface = surface
 		self._t = 0.0
 		self._bikepos = Point(2, 2)
+		positions = [self._bikepos.x - 2]
 
 		doRun = True
 		while doRun:
 			self._bikepos = self._bike.update(self._surface, self._bikepos, dt)
 			self._t += dt
 			vis.draw(self)
-			rundist = self._bikepos.x - 2
-			
 
+			rundist = self._bikepos.x - 2
+			if rundist >= 100:
+				doRun = False
+			positions.append(rundist)
+			if len(positions) > 100
+				diff = positions[-1] - positions.pop(0)
+				if diff < 0.1:
+					doRun = False
+			if self._bike.touches(self._surface)
+				doRun = False
+
+		fit = positions[-1]
+		if fit > self._surface.getDistance():
+			fit += 200 / self._t
+
+		return fit
 
 
 if __name__ == "__main__":

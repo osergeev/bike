@@ -55,6 +55,8 @@ class Surface(object):
 		if len(elems) > 0:
 			self._elements = elems
 			self._pts = []
+			self._distance = distance
+			self._height = height
 			for e in elems:
 				self._pts.append(e.getBegin())
 			self._pts.append(e.getEnd())
@@ -62,6 +64,8 @@ class Surface(object):
 			self._pts = [Point(0, 0), Point(5, 0)]
 			self._elements = [SurfaceElement(self._pts[0], self._pts[1])]
 			currPoint = self._pts[1]
+			self._distance = distance
+			self._height = height
 			while currPoint.x < distance:
 				w = R.random()
 				if currPoint.x + w > distance:
@@ -73,6 +77,12 @@ class Surface(object):
 				self._elements.append(SurfaceElement(currPoint, nextPoint))
 				self._pts.append(nextPoint)
 				currPoint = nextPoint
+
+	def getDistance(self):
+		return self._distance
+
+	def getHeight(self):
+		return self._height
 
 	def getPoints(self):	# use for visualization
 		return self._pts
