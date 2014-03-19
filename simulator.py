@@ -49,7 +49,7 @@ class Simulator(object):
 				diff = positions[-1] - positions.pop(0)
 				if diff < 0.1:
 					doRun = False
-			if self._bike.touches(self._surface)
+			if self._bike.touches(self._surface, self._bikepos)
 				doRun = False
 
 		fit = positions[-1]
