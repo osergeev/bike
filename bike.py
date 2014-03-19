@@ -21,11 +21,15 @@ class Mass(Point):
 			f += self._springs[s].getForce(self, s, dt)
 		return f
 
+	def getForce(self):
+		return self._prevf
+
 	def step(self, dt):
 		dPos = self._v * dt + self._prevf * 0.5 * dt * dt / self._m
 		self._x += dPos.x
 		self._y += dPos.y
 		f = self.calcForce(dt)
+		self._prevf = f
 		self._v += (self._prevf + f) * 0.5 * dt / self._m		# Velocity Verlet
 
 		# self._v += self.calcForce(dt) / self._m
@@ -47,12 +51,11 @@ class Wheel(Mass):
 		self.step()
 
 class Spring(object):
-	def __init__(self, m1, m2, D, b):
+	def __init__(self, m1, m2, D):
 		self._l0 = dist(m1, m2)
-		print "Initial length = {}".format(self._l0)
 		self._l = self._l0
 		self._D = D
-		self._b = b
+		self._b = D * 0.07
 
 	def getForce(self, m1, m2, dt):
 		l = dist(m1, m2)

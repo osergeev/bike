@@ -36,17 +36,17 @@ t = 0
 dt = 0.01
 
 origin = Point(0, 10)
-mass = Mass(1, Point(0, 10), 0, 5)
+mass = Mass(1, Point(0, 0), 0, 5)
 
-spring = Spring(mass, origin, 100, 1)
+spring = Spring(mass, origin, 100)
 
 outfile = open("damposc.txt", "w")
 
-mass.setSprings({origin: spring})
-
 while t < 10:
+	mass.setSprings({origin: spring})
 	mass.step(dt)
-	text = "{time}   {y} \n"
-	text = text.format(time = t, y = mass.y)
+	f = mass.getForce()
+	text = "{time}   {y}   {fy}\n"
+	text = text.format(time = t, y = mass.y, fy = f.y)
 	outfile.write(text)
 	t += dt
