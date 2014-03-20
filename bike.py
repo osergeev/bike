@@ -48,18 +48,17 @@ class Wheel(Mass):
 
 	def step(self, dt, surface):
 		pts = surface.getClosePoints(self)
-		touchPoint = None
+		self._inAir = True
 		while len(pts) > 0:
 			if dist(pts[0], self) < self._r:
 				touchPoint = pts[0]
+				self._inAir = False
 				break
 			else:
 				pts.pop(0)
-		if touchPoint == None:
-			self._inAir = True
+		if self._inAir == True:
 			super(Wheel, self).step(dt)
 		else:
-			self._inAir = False
 			r = touchPoint - self	# pull the wheel out of surface
 			d = r.getLength()
 			r = r.normalized()
@@ -84,7 +83,9 @@ class Wheel(Mass):
 				N = r * -absN
 			else:
 				N = Point(0, 0)
+			# print f, N
 			f += N
+			# print f
 			mgsinA = veldir * (self._gf * veldir) 	# vector multiplied by scalar
 			mult = self._m / (self._m + self._I / (self._r * self._r))
 			fr = (f + veldir * (self._T / self._r)) * mult - mgsinA

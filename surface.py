@@ -97,7 +97,7 @@ class Surface(object):
 		cpts = []
 		distances = {}
 		for e in self._elements:
-			if dist(p, e.getBegin()) > 10:
+			if dist(p, e.getBegin()) > 100:
 				continue
 			cpt = e.getClosestPoint(p)
 			distance = dist(p, cpt)
