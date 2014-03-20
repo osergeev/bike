@@ -1,5 +1,6 @@
 from geometry import *
 from bike import *
+from surface import *
 
 class A(object):
 	def __init__(self, x):
@@ -29,14 +30,14 @@ print p.x
 p3 = B(4)
 p4 = B(3)
 
-p = p3 + p4
-print p.x
+p3 += p4
+print p3.x
 
 t = 0
 dt = 0.01
 
 origin = Point(0, 10)
-mass = Mass(1, Point(0, 0), 0, 5)
+mass = Mass(1, Point(0, 3), 0, 5)
 
 spring = Spring(mass, origin, 100)
 
@@ -48,5 +49,22 @@ while t < 10:
 	f = mass.getForce()
 	text = "{time}   {y}   {fy}\n"
 	text = text.format(time = t, y = mass.y, fy = f.y)
+	outfile.write(text)
+	t += dt
+
+elem = SurfaceElement(Point(0, 30.02), Point(52, 0))	# 30 degrees
+surface = Surface(52, 35, [elem])
+
+wheel = Wheel(1, 0, Point(0, 0), 2, 35)
+
+outfile = open("wheelpos.txt", "w")
+
+t = 0
+while t < 10:
+	bikepos = wheel
+	print bikepos.x, bikepos. y
+	bikepos = wheel.step(dt, surface)
+	text = "{time}   {x}   {y}\n"
+	text = text.format(time = t, x = wheel.x, y = wheel.y)
 	outfile.write(text)
 	t += dt
