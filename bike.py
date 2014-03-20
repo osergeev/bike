@@ -53,6 +53,7 @@ class Wheel(Mass):
 			if dist(pts[0], self) < self._r:
 				touchPoint = pts[0]
 				self._inAir = False
+				pts.pop(0)
 				break
 			else:
 				pts.pop(0)
@@ -60,42 +61,44 @@ class Wheel(Mass):
 			super(Wheel, self).step(dt)
 		else:
 			r = touchPoint - self	# pull the wheel out of surface
-			d = r.getLength()
+			d = r.getLength() - self._r
 			r = r.normalized()
-			mov = r * (d - self._r)
+			mov = r * d
 			self._x += mov.x
 			self._y += mov.y
 			veldir = r.rotatedBy90()
 			self._v = veldir * (self._om * self._r) 	# condition on touch
-			# pts.pop(0)
-			# while len(pts) > 0:
-			# 	if d(self, pts[0]) < self._r:
-			# 		r = pts[0] - self
-			# 		d = r.getLength()
-			# 		r = r.normalized()
-			# 		mov = r * (d - self._r)
-			# 		cosA = mov * veldir
-			# 		mov = veldir / cosA
+			while len(pts) > 0:
+				if dist(self, pts[0]) < self._r:	# pull the wheel out of other surfaces
+					r = pts[0] - self
+					d = r.getLength() - self._r
+					r = r.normalized()
+					cosA = veldir * r
+					d /= cosA
+					mov = veldir * d
+					self._x += mov.x
+					self._y += mov.y
+				pts.pop(0)
 
-			f = super(Wheel, self).calcForce(dt)
+			mult = 1 / (self._m + self._I / (self._r * self._r))
+
+			dPos = self._v * dt + self._prevf * 0.5 * dt * dt * mult
+			self._x += dPos.x
+			self._y += dPos.y
+
+			f = self.calcForce(dt)		#as for Mass
+			r = touchPoint - self
+			r = r.normalized()
 			absN = f * r
 			if absN > 0:
 				N = r * -absN
 			else:
 				N = Point(0, 0)
-			# print f, N
 			f += N
-			# print f
-			mgsinA = veldir * (self._gf * veldir) 	# vector multiplied by scalar
-			mult = self._m / (self._m + self._I / (self._r * self._r))
-			fr = (f + veldir * (self._T / self._r)) * mult - mgsinA
+			fr = veldir * self._T / self._r
 			f += fr
-
-			dPos = self._v * dt + self._prevf * 0.5 * dt * dt / self._m
-			self._x += dPos.x
-			self._y += dPos.y
-			f = self.calcForce(dt)
-			self._v += (self._prevf + f) * 0.5 * dt / self._m
+			
+			self._v += (self._prevf + f) * 0.5 * dt * mult
 			self._prevf = f
 			self._om = self._v.getLength() / self._r
 			return self
@@ -117,7 +120,7 @@ class Spring(object):
 		return direct.normalized() * absF
 
 class Bike(object):
-	def __init__(self, c):
+	def __init__(self, c, test = False):
 		self._fitness = 0
 		self._chromosome = c
 		self._m1 = Mass(m = 40, v = Point(0, 0), x = 0, y = 0)

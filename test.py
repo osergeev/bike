@@ -52,19 +52,20 @@ while t < 10:
 	outfile.write(text)
 	t += dt
 
-elem = SurfaceElement(Point(0, 0), Point(52, 0))	# 30 degrees
-surface = Surface(52, 35, [elem])
+elem = SurfaceElement(Point(0, 30.02), Point(52, 0))	# 30 degrees
+surface = Surface(70, 50)
 
-wheel = Wheel(1, 500, Point(0, 0), 2, 2)
+wheel = Wheel(1, 10, Point(0, 0), 2, 2)
 
-outfile = open("wheelpos.txt", "w")
+outfile = open("wheelpos_surf.txt", "w")
 
 t = 0
-while t < 10 and wheel.x < 55:	# change condition in surface.getClosePoints() to run this test
+while t < 15 and wheel.x < 100:	# change condition in surface.getClosePoints() to run this test
 	bikepos = wheel
-	print bikepos.x, bikepos. y
 	bikepos = wheel.step(dt, surface)
 	text = "{time}   {x}   {y}\n"
 	text = text.format(time = t, x = wheel.x, y = wheel.y)
 	outfile.write(text)
 	t += dt
+print wheel.x
+print t
