@@ -1,5 +1,5 @@
 *.py[cod]
-damposc.txt
+*.txt
 
 # C extensions
 *.so
