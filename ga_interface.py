@@ -27,17 +27,6 @@ class BikeGeneration(object):
         fitnesslst = []
         for bike in bikelst:
             c = bike.getChromosome()
-            # print "gene = ", c[0]
-            # print "gene = ", c[1]
-            # print "gene = ", c[2]
-            # print "gene = ", c[3]
-            # print "gene = ", c[4]
-            # print "gene = ", c[5]
-            # print "gene = ", c[6]
-            # print "gene = ", c[7]
-            # print "gene = ", c[8]
-            # print "gene = ", c[9]
-            # print "gene = ", c[10]
             c_internal = [[c[0].x, c[0].y], [c[1].x, c[1].y], c[2],
                 [c[3].x, c[3].y], c[4], c[5], c[6], c[7], c[8], c[9], c[10]]
             chromosomelst.append(c_internal)
