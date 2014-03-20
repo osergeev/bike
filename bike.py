@@ -52,8 +52,8 @@ class Wheel(Mass):
 		self._inAir = True
 
 	@property
-	def radius(self):
-		return self._radius
+	def r(self):
+		return self._r
 
 	def step(self, dt, surface):
 		pts = surface.getClosePoints(self)
@@ -166,7 +166,7 @@ class Bike(object):
 	def getChromosome(self):
 		return self._chromosome
 
-	def getPositions(self):
+	def getElements(self):
 		return [self._m1, self._m2, self._w1, self._w2]
 
 	def touches(self, surface):
