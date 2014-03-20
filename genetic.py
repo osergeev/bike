@@ -206,6 +206,7 @@ class GeneticAlgorithm(object):
         elif isinstance(gene1.val,list):
             return self.crossover_lstgene(gene1,gene2)
         else:
+            # print gene1.val
             print "ERROR: Type of gene is not defined"
             exit()
 

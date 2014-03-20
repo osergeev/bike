@@ -93,7 +93,7 @@ class Simulator(object):
 				mpl.draw()
 
 			rundist = self._bike.getElements()[0].x - self._initpos
-			if rundist >= maxdist:
+			if rundist >= 10:
 				doRun = False
 			distances.append(rundist)
 			if len(distances) > 10000:
@@ -146,23 +146,33 @@ if __name__ == "__main__":
 
 	# c = [Point[-0.5, 0], Point(-1, 1), 0.5, Point(-1, -1.5), 0.5, 100, 100, 100, 100, 100, 100]
 
+	outfile = open("g_bike_out.txt", "w")
+	outfile.write("generation\tmaxfit\n\n")
+
 	generation = 1 		# show generation in the corner
 	doRunAll = True		# a button to stop the simulation?
 	while doRunAll:
 		nbike = 1
+		maxfit = 0
 		for b in bikes:
 			fit = sim.run(generation, nbike, b, timestep)
 			b.setFitness(fit)
+			if fit > maxfit:
+				maxfit = fit
 			nbike += 1
+
+		text = "{gen}\t{mf}\n".format(gen = generation, mf = maxfit)
+		outfile.write(text)
 
 		ga = BikeGeneration(bikes)
 		nextgen = ga.next()
 
 		generation += 1
 
-		if generation > 10:
+		if generation > 50:
 			break
 
 		bikes = nextgen
 
+	oufile.close()
 	mpl.show()
