@@ -1,16 +1,62 @@
 #  genetic.py
-  
+DEFLIMIT = 2.0
 
 import random
 
+class Generation(object):
+        def __init__(self, valuelistlist=[], fitnesslist=[], minlist=None, maxlist=None):
+            self.memberlist = []
+            self.fitnesslist = fitnesslist
+            self.minlist = minlist
+            self.maxlist = maxlist
+            for i in range(0,len(valuelistlist)):
+                self.build_member(valuelistlist[i],fitnesslist[i],minlist,maxlist)
+                
+        def set_memberlist(self, memberlist):
+            self.memberlist = memberlist
+        
+        def add_memberlist(self, memberlist):
+            self.memberlist += memberlist
+            
+        
+        def add_member(self, member):
+            self.memberlist.append(member)
+        
+        
+        def build_member(self, valuelist, fitness, minlist=None, maxlist=None):
+            chromosome = []
+            if minlist == None:
+                minlist = self.minlist
+            if maxlist == None:
+                maxlist = self.maxlist
+            for i in range(len(valuelist)):
+                value = valuelist[i]
+                try:
+                    minvalue = minlist[i]
+                except:
+                    minvalue = None
+                try:
+                    maxvalue = maxlist[i]
+                except:
+                    maxvalue = None
+                gene = Gene(value, minvalue, maxvalue)
+                chromosome.append(gene)
+            member = Member(chromosome,fitness)        
+            self.memberlist.append(member)
+        
+        
+        def next(self):
+            ga = GeneticAlgorithm(self.memberlist)
+            return ga.run_ga()
 
 
 class GeneticAlgorithm(object):
    
-    def __init__(self, chromosomelist):
+    def __init__(self, memberlist):
         self.MAXRULETTEWHEELCYCLES = 1000000
         self.ALTERCONST = 2.
-        self.chromosomes = chromosomelist
+        self.memberlist = memberlist
+        self.MUTPERCENT = 10.
         
     
     def check_limits(self,value,minvalue,maxvalue):
@@ -35,20 +81,20 @@ class GeneticAlgorithm(object):
     
     def selection_parent(self):
         #only is implemented roulette wheel selector
-        return self.selection_roulettewheel(self.chromosomes)
+        return self.selection_roulettewheel()
     
-    
-    def selection_roulettewheel(self,chromosomes):
-        sumfitness =  sum(chromosome.fitness for chromosome in chromosomes)
+     
+    def selection_roulettewheel(self):
+        sumfitness =  sum(member.fitness for member in self.memberlist)
         parentlist = []
         cycles = 0
-        while len(parentlist)< (len(chromosomes)/2):
+        while len(parentlist)< (len(self.memberlist)/2):
             pick = random.uniform(0, sumfitness)
             current = 0
-            for chromosome in self.chromosomes:
-                current += chromosome.fitness
-                if (current > pick) and (chromosome not in parentlist) and len(parentlist)< (len(chromosomes)/2):
-                    parentlist.append(chromosome)
+            for member in self.memberlist:
+                current += member.fitness
+                if (current > pick) and (member not in parentlist) and len(parentlist)< (len(self.memberlist)/2):
+                    parentlist.append(member)
             if cycles > self.MAXRULETTEWHEELCYCLES:
                 print "Warning! Cycles superate MAXRULETTEWHEELCYCLES, fix this situation"
                 return parentlist
@@ -58,15 +104,15 @@ class GeneticAlgorithm(object):
 
     def build_randomchildren(self):
         childrenlist=[]
-        chromosomesnumber = len(self.chromosomes)
+        membernumber = len(self.memberlist)
         #copy chromosome list
-        copychromosomeslist = self.chromosomes[:]
-        for nchild in range(chromosomesnumber/2):
-            #select and delete the chromosome 1
-            chrom1 = copychromosomeslist.pop(random.randint(0,len(copychromosomeslist)-1))
-            #select and delete the chromosome 2
-            chrom2= copychromosomeslist.pop(random.randint(0,len(copychromosomeslist)-1))
-            childrenlist.append(self.crossover_chromosome(chrom1,chrom2))
+        cpmemberlist = self.memberlist[:]
+        for nchild in range(len(self.memberlist)/2):
+            #select and delete the parent 1
+            parent1 = cpmemberlist.pop(random.randint(0,len(cpmemberlist)-1))
+            #select and delete the parent 2
+            parent2= cpmemberlist.pop(random.randint(0,len(cpmemberlist)-1))
+            childrenlist.append(self.crossover_chromosome(parent1.chromosome,parent2.chromosome))
         return childrenlist
     
     
@@ -74,14 +120,16 @@ class GeneticAlgorithm(object):
     # CROSSOVER FUNCTIONS
     #============================================
     
-   
-    
     def crossover_chromosome(self, chromosome1, chromosome2):
         #can implement check_crossovility
         childgenlist = []
-        for igen in range(0,len(chromosome1.genes)):
-            childgenlist.append(self.crossover_gene(chromosome1.genes[igen],chromosome2.genes[igen]))
-        return Chromosome(childgenlist)
+        for igen in range(0,len(chromosome1)):
+            crossgen = self.crossover_gene(chromosome1[igen],chromosome2[igen])
+            # mutation of gen 
+            crossgen = self.mutation_gene(crossgen)
+            childgenlist.append(crossgen)
+            
+        return Member(childgenlist)
 
     
     def crossover_gene(self,gene1,gene2):
@@ -131,54 +179,75 @@ class GeneticAlgorithm(object):
             
     # MUTATION FUNCTIONS
     #============================================
+    #
+    def mutation_gene(self,gene):
+        # implemented for float gene only
+        # do mutation on value
+        rnd = random.random() * 100.0
+        if rnd > self.MUTPERCENT:
+            return gene
+        else:
+            if isinstance(gene.value,float):
+                gene.value = (self.mutation_floatgene(gene))
+                return gene
+            elif isinstance(gene.value,list):
+                gene.value = (self.mutation_list(gene))
+                return gene
+            
     
-    #~ def mutation_chromosome(self,chromosome):
-        #~ for gene in chromosome.genes:
-            #~ rnd = random.random()
-            #~ if rnd < self.mutationpercent:
-                #~ gene.value = mutation_gene(gene)
-    #~ 
-    #~ 
-    #~ def mutation_gene(self,gene):
-        #~ # implemented for float gene only
-        #~ # do mutation on value
-        #~ gene.value = mutation_floatgene(gene)
-    #~ 
-    #~ 
-    #~ def mutation_listgene(self,listgene):
-        #~ pass
-    #~ 
-    #~ 
-    #~ def mutation_floatgene(self,floatgene):
-        #~ minvalue = self.floatgene.minvalue
-        #~ maxvalue = self.floatgene.maxvalue
-        #~ mutatedvalue = random.uniform(minvalue,maxvalue)
-        #~ return mutatedvalue
+    def mutation_listgene(self,listgene):
+        mutvaluelist = []
+        for gene in listgene:
+            newvalue = uniform(gene.minvalue, gene.maxvalue)
+            mutvaluelist.append(newvalue)
+        return mutvaluelist
+            
+    
+    def mutation_floatgene(self,floatgene):
+        minvalue = floatgene.minvalue
+        maxvalue = floatgene.maxvalue
+        mutvalue = random.uniform(minvalue,maxvalue)
+        return mutvalue
+
         
-
-
-  
-
-class Chromosome(object):
+class Member(object):
     def __init__(self, genelist, fitness=None):
-        self.genes = []
+        self.chromosome = genelist
         self.fitness = fitness
-        for gene in genelist:
-            self.genes.append(gene)
         
-    def add_gene(self,gene):
-        self.genes.append(gene)
+    def get_chrom(self):
+        genevaluelist = []
+        for gene in self.chromosome:
+            genevaluelist.append(gene.value)
+        return genevaluelist
         
         
 class Gene(object):
-    def __init__(self, value, minvalue, maxvalue):
+    def __init__(self, value, minvalue=None, maxvalue=None):
         self.value = value
-        self.minvalue = minvalue
-        self.maxvalue = maxvalue
-    
+        
+        if minvalue == None:
+            if isinstance(value,float):
+                self.minvalue(value-DEFLIMIT)
+            elif isinstance(value,list):
+                #buil a list of dimension of gene
+                self.minvalue([value-DEFLIMIT]*len(value))
+        else:
+            self.minvalue = minvalue
+            
+        
+        if maxvalue == None:
+            if isinstance(value,float):
+                self.maxvalue(value+DEFLIMIT)
+            elif isinstance(value,list):
+                #build a list of dimension of gene
+                self.maxvalue([value+DEFLIMIT]*len(value))
+        else:
+            self.maxvalue = maxvalue
+        
+ 
 
-
-def bike_to_chromosome(bike,minvaluedic,maxvaluedic):
+#~ def bike_to_chromosome(bike,minvaluedic,maxvaluedic):
     #~ gene00 = Gene(bike.p0.value,minvaluedic["p00"],maxvaluedic["p00"])
     #~ gene01 = Gene(bike.p0.value,minvaluedic["p01"],maxvaluedic["p01"])
     #~ gene02 = Gene(bike.p0.value,minvaluedic["p02"],maxvaluedic["p02"])
@@ -189,8 +258,8 @@ def bike_to_chromosome(bike,minvaluedic,maxvaluedic):
     #~ gene07 = Gene(bike.p0.value,minvaluedic["p07"],maxvaluedic["p07"])
     #~ gene08 = Gene(bike.p0.value,minvaluedic["p08"],maxvaluedic["p08"])
     #~ gene09 = Gene(bike.p0.value,minvaluedic["p09"],maxvaluedic["p09"]) 
-    pass
-    
-    
-def chromosome_to_bike(chromosome):
-    pass
+    #~ pass
+    #~ 
+    #~ 
+#~ def chromosome_to_bike(chromosome):
+    #~ pass
