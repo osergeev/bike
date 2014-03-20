@@ -10,6 +10,11 @@ class Mass(Point):
 		self._gf = Point(0, -9.8 * self._m) 	# constant
 		self._prevf = self._gf 	# for Velocity Verlet
 
+	def touches(self, surface):
+		if surface.isAbove(self):
+			return True
+		return False
+
 	def setSprings(self, springs):
 		self._springs = springs 	# dict {point: spring}
 
@@ -45,6 +50,10 @@ class Wheel(Mass):
 		self._I = self._m * self._r * self._r 	# ring
 		self._om = 0
 		self._inAir = True
+
+	@property
+	def radius(self):
+		return self._radius
 
 	def step(self, dt, surface):
 		pts = surface.getClosePoints(self)
@@ -120,9 +129,57 @@ class Spring(object):
 		return direct.normalized() * absF
 
 class Bike(object):
-	def __init__(self, c, test = False):
+	def __init__(self, c, bikepos, test = False):
 		self._fitness = 0
 		self._chromosome = c
-		self._m1 = Mass(m = 40, v = Point(0, 0), x = 0, y = 0)
-		self._m2 = Mass(m = 20, v = Point(0, 0), x = c[0].x, y = c[0].y)
-		self._w1 = Wheel(radius = c[2], torque = 1)
+		self._m1 = Mass(m = 40, x = 0, y = 0)	# all velocities implicitly = (0, 0)
+		self._m2 = Mass(m = 20, x = c[0].x, y = c[0].y)
+		self._w1 = Wheel(radius = c[2], torque = 100, x = c[1].x, y = c[1]. y)
+		self._w2 = Wheel(radius = c[4], x = c[3].x, y = c[3].y)	# torque = 0
+		self._m1m2 = Spring(self._m1, self._m2, c[5])
+		self._m1w1 = Spring(self._m1, self._w1, c[6])
+		self._m1w2 = Spring(self._m1, self._w2, c[7])
+		self._m2w1 = Spring(self._m2, self._w1, c[8])
+		self._m2w2 = Spring(self._m2, self._w2, c[9])
+		self._w1w2 = Spring(self._w1, self._w2, c[10])
+
+		self._springset = {"m1": {self._m2: self._m1m2, self._w1: self._m1w1, self._w2: self._m1w2},
+						   "m2": {self._m1: self._m1m2, self._w1: self._m2w1, self._w2: self._m2w2},
+						   "w1": {self._m1: self._m1w1, self._m2: self._m2w1, self._w2: self._w1w2},
+						   "w2": {self._m1: self._m1w2, self._m2: self._m2w2, self._w1: self._w1w2}}
+
+		self._m1.x += bikepos.x		# converting coordinates to global frame
+		self._m1.y += bikepos.y
+		self._m2.x += bikepos.x
+		self._m2.y += bikepos.y
+		self._w1.x += bikepos.x
+		self._w1.y += bikepos.y
+		self._w2.x += bikepos.x
+		self._w2.y += bikepos.y
+
+	def setFitness(self, fit):
+		self._fitness = fit
+
+	def getFitness(self):
+		return self._fitness
+
+	def getChromosome(self):
+		return self._chromosome
+
+	def getPositions(self):
+		return [self._m1, self._m2, self._w1, self._w2]
+
+	def touches(self, surface):
+		if self._m1.touches(surface) or self._m2.touches(surface):
+			return True
+		return False
+
+	def step(self, dt, surface):
+		self._w1.setSprings(self._springset["w1"])
+		self._w1.step(dt, surface)
+		self._w2.setSprings(self._springset["w2"])
+		self._w2.step(dt, surface)
+		self._m1.setSprings(self._springset["m1"])
+		self._m1.step(dt)
+		self._m2.setSprings(self._springset["m2"])
+		self._m2.step(dt)
