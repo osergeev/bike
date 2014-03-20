@@ -83,7 +83,7 @@ xs, ys = zip(*surfacepoints)
 mpl.plot(xs,ys,linewidth=3)
 #    
     
-c = [Point(-1, 0), Point(0, -1), 0.5, Point(-1, -1), 0.5, 5000, 5000, 5000, 5000, 5000, 5000]
+c = [Point(-1, 0), Point(0.5, -1), 0.5, Point(-1.5, -1), 0.5, 5000, 5000, 5000, 5000, 5000, 5000]
 
 b = Bike(c, Point(2, 2))
 
@@ -103,7 +103,7 @@ axes.add_patch(wheel2)
 point1 = mpl.Circle((0,0), radius=0.2,color='r')
 point1.center = (elems[0].x,elems[0].y)
 axes.add_patch(point1)
-point2 = mpl.Circle((0,0), radius=0.2,color='r')
+point2 = mpl.Circle((0,0), radius=0.1,color='r')
 point2.center = (elems[1].x,elems[1].y)
 axes.add_patch(point2)
    
@@ -139,7 +139,7 @@ while doRun:
 #	outfile.write(text)
 	t += dt
 	nsteps += 1
-	if nsteps % 10 == 0:
+	if nsteps % 20 == 0:
 		elems = b.getElements()
 		wheel1.center = (elems[2].x,elems[2].y)
 		wheel2.center = (elems[3].x,elems[3].y)
