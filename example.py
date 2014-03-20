@@ -44,9 +44,6 @@ spr2,=axes.plot([xp2,xw1,xp1], [yp2,yw1,yp1],'-')
 
 # define the figure hierarchy (figure holds axes)
 
-
-
-
 # add a patch to the axis
 wheel1 = mpl.Circle((0,0), radius=0.4)
 axes.add_patch(wheel1)
@@ -60,7 +57,6 @@ axes.add_patch(point1)
 point2 = mpl.Circle((0,0), radius=0.2)
 point2.center = (xp2,yp2)
 axes.add_patch(point2)
-
 
 xs, ys = zip(*surfacepoints)
 #print xs, ys
@@ -86,11 +82,9 @@ for i in range(0, 2000):
    #spr1.set_ydata(axes.plot([xw1+i,xw+i,xp1,xp2+i,xw2+i], [yw1,yw2,yp1,yp2,yw2]))
    #spr2.set_ydata(axes.plot([xp2+i,xw1+i,xp1+i], [yp2,yw1,yp1]))
    
-   #figure.canvas.draw()
+   #figure.canvas.draw()   
    
-
 # afterwards, switch to zoomable GUI mode
 
 mpl.ioff()
 mpl.show()
-

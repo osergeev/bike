@@ -5,6 +5,14 @@ class Point(object):
 		self._x = float(x)
 		self._y = float(y)
 
+	def __getitem__(self,i):
+		if i == 0:
+			return self._x
+		elif i == 1:
+			return self._y
+		else:
+			raise IndexError
+
 	@property
 	def x(self):
 		return self._x
