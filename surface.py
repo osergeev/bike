@@ -66,12 +66,12 @@ class Surface(object):
 			self._distance = distance
 			self._height = 0
 			while currPoint.x < distance:
-				w = R.random() * 5
+				w = 0.5 + R.random() * 1.5
 				if currPoint.x + w > distance:
 					w = distance - currPoint.x + 5
 					h = 0
 				else:
-					h = (2 * R.random() - 1) * w * 1.2
+					h = (2 * R.random() - 1) * w * 0.5
 					self._height += h
 					if self._height > height:
 						h = -h
@@ -103,7 +103,7 @@ class Surface(object):
 		cpts = []
 		distances = {}
 		for e in self._elements:
-			if dist(p, e.getBegin()) > 20:
+			if dist(p, e.getBegin()) > 5:
 				continue
 			cpt = e.getClosestPoint(p)
 			distance = dist(p, cpt)

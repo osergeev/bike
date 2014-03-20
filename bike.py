@@ -58,36 +58,36 @@ class Wheel(Mass):
 	def step(self, dt, surface):
 		pts = surface.getClosePoints(self)
 		self._inAir = True
-		while len(pts) > 0:
-			if dist(pts[0], self) < self._r:
-				touchPoint = pts[0]
-				self._inAir = False
-				pts.pop(0)
-				break
-			else:
-				pts.pop(0)
+		# while len(pts) > 0:
+		if dist(pts[0], self) < self._r:
+			touchPoint = pts[0]
+			self._inAir = False
+				# pts.pop(0)
+			# break
+			# else:
+				# pts.pop(0)
 		if self._inAir == True:
 			super(Wheel, self).step(dt)
 		else:
 			r = touchPoint - self	# pull the wheel out of surface
 			d = r.getLength() - self._r
 			r = r.normalized()
-			mov = r * d
-			self._x += mov.x
-			self._y += mov.y
+			# mov = r * d
+			# self._x += mov.x
+			# self._y += mov.y
 			veldir = r.rotatedBy90()
 			self._v = veldir * (self._om * self._r) 	# condition on touch
-			while len(pts) > 0:
-				if dist(self, pts[0]) < self._r:	# pull the wheel out of other surfaces
-					r = pts[0] - self
-					d = r.getLength() - self._r
-					r = r.normalized()
-					cosA = veldir * r
-					d /= cosA
-					mov = veldir * d
-					self._x += mov.x
-					self._y += mov.y
-				pts.pop(0)
+			# while len(pts) > 0:
+			# 	if dist(self, pts[0]) < self._r:	# pull the wheel out of other surfaces
+			# 		r = pts[0] - self
+			# 		d = r.getLength() - self._r
+			# 		r = r.normalized()
+			# 		# cosA = veldir * r
+			# 		# d /= cosA
+			# 		# mov = veldir * d
+			# 		# self._x += mov.x
+			# 		# self._y += mov.y
+			# 	pts.pop(0)
 
 			mult = 1 / (self._m + self._I / (self._r * self._r))
 
@@ -104,7 +104,7 @@ class Wheel(Mass):
 			else:
 				N = Point(0, 0)
 			f += N
-			fr = veldir * self._T / self._r
+			fr = veldir * (self._T / self._r)
 			f += fr
 			
 			self._v += (self._prevf + f) * 0.5 * dt * mult
@@ -134,7 +134,7 @@ class Bike(object):
 		self._chromosome = c
 		self._m1 = Mass(m = 40, x = 0, y = 0)	# all velocities implicitly = (0, 0)
 		self._m2 = Mass(m = 20, x = c[0].x, y = c[0].y)
-		self._w1 = Wheel(radius = c[2], torque = 100, x = c[1].x, y = c[1]. y)
+		self._w1 = Wheel(radius = c[2], torque = 500, x = c[1].x, y = c[1]. y)
 		self._w2 = Wheel(radius = c[4], x = c[3].x, y = c[3].y)	# torque = 0
 		self._m1m2 = Spring(self._m1, self._m2, c[5])
 		self._m1w1 = Spring(self._m1, self._w1, c[6])
