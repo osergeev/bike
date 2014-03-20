@@ -30,7 +30,7 @@ def bikeanim(xw1,yw1,xw2,yw2,xp1,yp1,xp2,yp2,r1,r2,i):
     axes = figure.add_subplot('111',aspect='equal')
 
 #axes.set_xlim(0,100)
-    axes.set_ylim(-5,7)
+    axes.set_ylim(-5,10)
     time_text = axes.text(0.02, 0.95, '', transform=axes.transAxes)
     dist_text = axes.text(0.02, 0.90, '', transform=axes.transAxes)
     spr1,=axes.plot([xw1,xw2,xp1,xp2,xw2], [yw1,yw2,yp1,yp2,yw2],'-')
