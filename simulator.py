@@ -6,6 +6,7 @@ import matplotlib.pyplot as mpl
 from geometry import *
 from surface import Surface
 from bike import Bike
+from ga_interface import BikeGeneration
 # import visualizer as vis
 
 # try:
@@ -154,12 +155,12 @@ if __name__ == "__main__":
 			b.setFitness(fit)
 			nbike += 1
 
-		# nextgen = GeneticAlgorithm(bikes)
-		nextgen = bikes
+		ga = BikeGeneration(bikes)
+		nextgen = ga.next()
 
 		generation += 1
 
-		if generation > 1:
+		if generation > 10:
 			break
 
 		bikes = nextgen
