@@ -38,17 +38,20 @@ class Point(object):
 	def rotatedBy90(self):
 		return Point(-self._y, self._x)
 
+	def getLength(self):
+		return dist(self, Point(0, 0))
+
 	def normalized(self):
-		length = dist(self, Point(0, 0))
+		length = self.getLength()
 		if length == 0:
 			return Point(0, 0)
 		else:
 			return Point(self._x / length, self._y / length)
 
-	def convertedToBikeFrame(bikepos):
+	def convertedToBikeFrame(self, bikepos):
 		return Point(self.x - bikepos.x, self.y - bikepos.y)
 
-	def convertedToGlobalFrame(bikepos):
+	def convertedToGlobalFrame(self, bikepos):
 		return Point(self.x + bikepos.x, self.y + bikepos.y)
 
 	def __add__(self, other):
@@ -62,6 +65,9 @@ class Point(object):
 			return (self.x * other.x + self.y * other.y)
 		else:
 			return Point(self.x * other, self.y * other)
+
+	def __div__(self, other):
+		return Point(self.x / other, self.y / other)
 
 	def __le__(self, other):
 		if self.x <= other.x:
