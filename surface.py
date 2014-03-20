@@ -1,4 +1,3 @@
-
 from geometry import *
 import numpy as np
 import random as R
@@ -65,14 +64,21 @@ class Surface(object):
 			self._elements = [SurfaceElement(self._pts[0], self._pts[1])]
 			currPoint = self._pts[1]
 			self._distance = distance
-			self._height = height
+			self._height = 0
 			while currPoint.x < distance:
-				w = R.random()
+				w = R.random() * 5
 				if currPoint.x + w > distance:
 					w = distance - currPoint.x + 5
 					h = 0
 				else:
-					h = (2 * R.random() - 1) * w * 1.2	#TODO: check for exceeding maximum height
+					h = (2 * R.random() - 1) * w * 1.2
+					self._height += h
+					if self._height > height:
+						h = -h
+						self._height += 2 * h
+					if self._height < -height:
+						h = -h
+						self._height += 2 * h
 				nextPoint = Point(currPoint.x + w, currPoint.y + h)
 				self._elements.append(SurfaceElement(currPoint, nextPoint))
 				self._pts.append(nextPoint)
@@ -97,7 +103,7 @@ class Surface(object):
 		cpts = []
 		distances = {}
 		for e in self._elements:
-			if dist(p, e.getBegin()) > 10:
+			if dist(p, e.getBegin()) > 20:
 				continue
 			cpt = e.getClosestPoint(p)
 			distance = dist(p, cpt)

@@ -15,8 +15,7 @@ from surface import Surface
 # 	sys.exit(1)
 
 class Simulator(object):
-	def __init__(self, bike, surface):
-		self._bike = bike
+	def __init__(self, surface):
 		self._surface = surface
 
 	def getSurface(self):
@@ -28,33 +27,34 @@ class Simulator(object):
 	def getBikePos(self):
 		return self._bikepos
 
-	def run(self, bike, surface, dt = 0.01):
+	def run(self, bike, dt = 0.01):
 		self._bike = bike
-		self._surface = surface
 		self._t = 0.0
-		self._bikepos = Point(2, 2)
-		positions = [self._bikepos.x - 2]
+		self._initpos = bike.getPositions()[0]
+		distances = [0]
 
 		doRun = True
+		maxdist = self._surface.getDistance()
 		while doRun:
-			self._bikepos = self._bike.update(self._surface, self._bikepos, dt)
+			self._bike.step(dt, self._surface)
 			self._t += dt
-			vis.draw(self)
+			# vis.draw(self)
 
-			rundist = self._bikepos.x - 2
-			if rundist >= 100:
+			self._bikepos = self._bike.getPositions()[0]
+			rundist = self._bikepos.x - self._initpos.x
+			if rundist >= maxdist:
 				doRun = False
-			positions.append(rundist)
-			if len(positions) > 100
-				diff = positions[-1] - positions.pop(0)
-				if diff < 0.1:
+			distances.append(rundist)
+			if len(distances) > 100:
+				diff = distances[-1] - distances.pop(0)
+				if diff < 0.01:
 					doRun = False
-			if self._bike.touches(self._surface, self._bikepos)
+			if self._bike.touches(self._surface):
 				doRun = False
 
-		fit = positions[-1]
-		if fit > self._surface.getDistance():
-			fit += 200 / self._t
+		fit = distances[-1]
+		if fit > maxdist:
+			fit += 100 / self._t
 
 		return fit
 
@@ -73,6 +73,8 @@ if __name__ == "__main__":
 	# 	c = Chromosome(...)
 	# 	b = Bike(c)
 	# 	bikes.append(b)
+
+	# c = [Point[-0.5, 0], Point(-1, 1), 0.5, Point(-1, -1.5), 0.5, 100, 100, 100, 100, 100, 100]
 
 	generation = 1 		# show generation in the corner
 	doRunAll = True		# a button to stop the simulation?
