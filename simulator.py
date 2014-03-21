@@ -45,7 +45,7 @@ class Simulator(object):
 		xs, ys = zip(*surfacepoints)
 		mpl.plot(xs,ys,linewidth=3)
 
-		axes.set_ylim(-10,10)
+		axes.set_ylim(-15,15)
 		ngen_text = axes.text(0.02, 0.95, '', transform=axes.transAxes)
 		bike_text = axes.text(0.02, 0.90, '', transform=axes.transAxes)
 		time_text = axes.text(0.02, 0.85, '', transform=axes.transAxes)
@@ -56,7 +56,7 @@ class Simulator(object):
 		wheel1 = mpl.Circle((0,0), radius=elems[2].r,color='black')
 		axes.add_patch(wheel1)
 		wheel1.center = (elems[2].x,elems[2].y)
-		wheel2 = mpl.Circle((0,0), radius=elems[3].r,color='black')
+		wheel2 = mpl.Circle((0,0), radius=elems[3].r,color='grey')
 		wheel2.center = (elems[3].x,elems[3].y)
 		axes.add_patch(wheel2)
 		point1 = mpl.Circle((0,0), radius=0.2,color='r')
@@ -74,7 +74,7 @@ class Simulator(object):
 			self._t += dt
 			nsteps += 1
 
-			if nsteps % 20 == 0:
+			if nsteps % 50 == 0:
 				elems = self._bike.getElements()
 				wheel1.center = (elems[2].x,elems[2].y)
 				wheel2.center = (elems[3].x,elems[3].y)
@@ -88,17 +88,17 @@ class Simulator(object):
 				bike_text.set_text('Nbike = %d' % nbike)
 				time_text.set_text('time = %.1f' % self._t)
 				dist_text.set_text('distance = %.3f' % (elems[0].x - self._initpos))
-				axes.set_xlim(elems[0].x-2,elems[0].x+12)
+				axes.set_xlim(elems[0].x-10,elems[0].x+20)
 				#mpl.title()
 				mpl.draw()
 
 			rundist = self._bike.getElements()[0].x - self._initpos
-			if rundist >= 10:
+			if rundist >= maxdist:
 				doRun = False
 			distances.append(rundist)
-			if len(distances) > 10000:
+			if len(distances) > 1000:
 				diff = distances[-1] - distances.pop(0)
-				if diff < 0.01:
+				if diff < 0.1:
 					doRun = False
 			if self._bike.touches(self._surface):
 				doRun = False
@@ -108,16 +108,16 @@ class Simulator(object):
 
 		fit = distances[-1]
 		if fit > maxdist:
-			fit += 100 / self._t
+			fit += 10000 / self._t
 
 		return fit
 
 
 if __name__ == "__main__":
 	nbikes = 20
-	timestep = 0.001
+	timestep = 0.0025
 	distance = 100
-	height = 30
+	height = 15
 
 	surf = Surface(distance, height)
 	sim = Simulator(surf)
@@ -128,10 +128,10 @@ if __name__ == "__main__":
 	 	m2y = 2 * R.random() - 1
 	 	w1x = 2 * R.random() - 1
 	 	w1y = 2 * R.random() - 1
-	 	w1r = 0.2 + R.random() * 0.5
+	 	w1r = 0.3 + R.random() * 0.5
 	 	w2x = 2 * R.random() - 1
 	 	w2y = 2 * R.random() - 1
-	 	w2r = 0.2 + R.random() * 0.5
+	 	w2r = 0.3 + R.random() * 0.5
 	 	Dm1m2 = 5000 + 20000 * R.random()
 	 	Dm1w1 = 5000 + 20000 * R.random()
 	 	Dm1w2 = 5000 + 20000 * R.random()
@@ -154,14 +154,17 @@ if __name__ == "__main__":
 	while doRunAll:
 		nbike = 1
 		maxfit = 0
+		avefit = 0
 		for b in bikes:
 			fit = sim.run(generation, nbike, b, timestep)
 			b.setFitness(fit)
 			if fit > maxfit:
 				maxfit = fit
+			avefit += fit
 			nbike += 1
+		avefit /= nbikes
 
-		text = "{gen}\t{mf}\n".format(gen = generation, mf = maxfit)
+		text = "{gen}\t{mf}\t{af}\n".format(gen = generation, mf = maxfit, af = avefit)
 		outfile.write(text)
 
 		ga = BikeGeneration(bikes)
@@ -169,10 +172,10 @@ if __name__ == "__main__":
 
 		generation += 1
 
-		if generation > 50:
-			break
+		if generation > 20:
+			doRunAll = False
 
 		bikes = nextgen
 
-	oufile.close()
+	outfile.close()
 	mpl.show()

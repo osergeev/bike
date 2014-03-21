@@ -117,7 +117,7 @@ class Spring(object):
 		self._l0 = dist(m1, m2)
 		self._l = self._l0
 		self._D = D
-		self._b = 7
+		self._b = 20
 
 	def getForce(self, m1, m2, dt):
 		l = dist(m1, m2)
@@ -134,7 +134,7 @@ class Bike(object):
 		self._chromosome = c
 		self._m1 = Mass(m = 40, x = 0, y = 0)	# all velocities implicitly = (0, 0)
 		self._m2 = Mass(m = 20, x = c[0].x, y = c[0].y)
-		self._w1 = Wheel(radius = c[2], torque = 500, x = c[1].x, y = c[1]. y)
+		self._w1 = Wheel(radius = c[2], torque = 700, x = c[1].x, y = c[1]. y)
 		self._w2 = Wheel(radius = c[4], x = c[3].x, y = c[3].y)	# torque = 0
 		self._m1m2 = Spring(self._m1, self._m2, c[5])
 		self._m1w1 = Spring(self._m1, self._w1, c[6])
