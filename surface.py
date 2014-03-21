@@ -3,6 +3,8 @@ import numpy as np
 import random as R
 
 class SurfaceElement(object):
+	"""An auxiliary class for constructing a surface
+	and calculating distances."""
 	def __init__(self, pb, pe):
 		self._pb = pb
 		self._pe = pe
@@ -11,21 +13,28 @@ class SurfaceElement(object):
 		self._len = dist(self._pb, self._pe)
 
 	def getW(self):
+		"""Returns x projection of the element."""
 		return self._w
 
 	def getH(self):
+		"""Returns y projection of the element."""
 		return self._h
 
 	def getLen(self):
+		"""Returns length of the element."""
 		return self._len
 
 	def getBegin(self):
+		"""Returns left point of the element."""
 		return self._pb
 
 	def getEnd(self):
+		"""Returns right point of the element."""
 		return self._pe
 
 	def isAbove(self, p):
+		"""True if a given point is above the element. 
+		Used for masses."""
 		x = p.x
 		if x > self._pb.x and x < self._pe.x:
 			y = p.y
@@ -34,6 +43,8 @@ class SurfaceElement(object):
 		return False
 
 	def getClosestPoint(self, p):
+		"""Returns point of a segment, 
+		closest to the given point."""
 		if (p.x - self._pb.x) * self._h == (p.y - self._pb.y) * self._w:	#if p is on a line, a/b = c/d
 			crossPoint = p
 		else:
@@ -50,6 +61,8 @@ class SurfaceElement(object):
 			return crossPoint
 
 class Surface(object):
+	"""Represents a surface on which bicycle moves.
+	It is created randomly and once for the whole process."""
 	def __init__(self, distance, height, elems=[]):
 		if len(elems) > 0:
 			self._elements = elems
@@ -85,21 +98,29 @@ class Surface(object):
 				currPoint = nextPoint
 
 	def getDistance(self):
+		"""Returns surface length along x direction."""
 		return self._distance
 
 	def getHeight(self):
+		"""Returns surface length along y direction."""
 		return self._height
 
 	def getPoints(self):	# use for visualization
+		"""Returns all consituent points"""
 		return self._pts
 
 	def isAbove(self, p):	# use with masses
+		"""Tris function returns True if the surface is above
+		the given point. Used for masses."""
 		for e in self._elements:
 			if e.isAbove(p):
 				return True
 		return False
 
 	def getClosePoints(self, p):	# use with wheels
+		"""Returns list of the surface points
+		closest to the given point, sorted from the
+		rightmost point to the leftmost one. Used for wheels."""
 		cpts = []
 		distances = {}
 		for e in self._elements:

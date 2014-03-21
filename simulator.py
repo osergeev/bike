@@ -6,32 +6,30 @@ import matplotlib.pyplot as mpl
 from geometry import *
 from surface import Surface
 from bike import Bike
-from ga_interface import BikeGeneration
-# import visualizer as vis
-
-# try:
-# 	from bike import Bike
-#	from chromosome import Chromosome
-# 	from ga import GeneticAlgorithm
-#	from visual import Draw
-# except:
-# 	print "Not enough modules for simulation"
-# 	sys.exit(1)
+# from ga_interface import BikeGeneration
+from altgenetic import geneticAlgorithm
 
 class Simulator(object):
+	"""Runs simulations. 
+	Returns fitness values for bicycles."""
 	def __init__(self, surface):
 		self._surface = surface
 
 	def getSurface(self):
+		"""Returns surface."""
 		return self._surface
 
 	def getTime(self):
+		"""Returns current time of a model."""
 		return self._t
 
 	def getBikePos(self):
+		"""Returns current x coordinate of m1."""
 		return self._bikepos
 
 	def run(self, gen, nbike, bike, dt):
+		"""Runs one simulation for a given bike.
+		Also draws animation."""
 		self._bike = bike
 		self._t = 0.0
 		self._initpos = bike.getElements()[0].x
@@ -146,7 +144,7 @@ if __name__ == "__main__":
 
 	# c = [Point[-0.5, 0], Point(-1, 1), 0.5, Point(-1, -1.5), 0.5, 100, 100, 100, 100, 100, 100]
 
-	outfile = open("g_bike_out.txt", "w")
+	outfile = open("g_bike_out_alt.txt", "w")
 	outfile.write("generation\tmaxfit\n\n")
 
 	generation = 1 		# show generation in the corner
@@ -167,12 +165,13 @@ if __name__ == "__main__":
 		text = "{gen}\t{mf}\t{af}\n".format(gen = generation, mf = maxfit, af = avefit)
 		outfile.write(text)
 
-		ga = BikeGeneration(bikes)
-		nextgen = ga.next()
+		# ga = BikeGeneration(bikes)
+		# nextgen = ga.next()
+		nextgen = geneticAlgorithm(bikes, 5)
 
 		generation += 1
 
-		if generation > 20:
+		if generation > 10:
 			doRunAll = False
 
 		bikes = nextgen
